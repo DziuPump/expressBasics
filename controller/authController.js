@@ -4,7 +4,8 @@ import jwt from "jsonwebtoken";
 
 export const createUser = async (req, res) => {
   try {
-    if (req.body.isAdmin === "true") {
+    // request to become admin can be written in 2 ways - "true" and true, so need to check both
+    if (req.body.isAdmin === "true" || req.body.isAdmin === true) {
       return res.status(403).send("Cannot make yourself an admin on creation");
     }
     const salt = bcrypt.genSaltSync(10);

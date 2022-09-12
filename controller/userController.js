@@ -33,20 +33,24 @@ export const updateUser = async (req, res) => {
   try {
     console.log(req.user.isAdmin);
     console.log(req.body.isAdmin);
-    console.log(req.user.id);
-    console.log(req.params.id);
 
-    // userModel.findById(req.params.id, (err, data) => {
-    //   console.log(data.isAdmin === true);
-    // });
-
-    if (req.user.isAdmin === false && req.body.isAdmin === true) {
+    // if requester is not admin, he cannot request to be admin
+    // request to become admin can be written in 2 ways - "true" and true so need to check both
+    if (
+      req.user.isAdmin === false &&
+      (req.body.isAdmin === true || req.body.isAdmin === "true")
+    ) {
       return res.status(403).send("Cannot make yourself an admin with update");
     }
 
-    if (req.user.id === req.params.id && req.user.isAdmin === true) {
-      console.log("sausainiu trynimas");
-      res.cookie("session_token", { maxAge: 0 });
+    // if requester is admin and his request is to unadmin himself then delete cookies too
+    if (
+      req.user.id === req.params.id &&
+      req.user.isAdmin === true &&
+      (req.body.isAdmin === false || req.body.isAdmin === "false")
+    ) {
+      console.log("cookie deletion");
+      invalidateCookie(req, res);
     }
 
     const updatedUser = await userModel.findByIdAndUpdate(
