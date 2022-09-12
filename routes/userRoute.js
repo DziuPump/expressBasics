@@ -1,14 +1,19 @@
 import express from "express";
-import userModel from "../models/userModel.js";
-import { createUser, deleteUserById, getAllUsers, getUserById, updateUser } from "../controller/userController.js";
+import { verifySessionTokenUser, verifySessionTokenAdmin } from "../authCheck/authCheck.js";
+import { deleteUserById, getAllUsers, getUserById, updateUser } from "../controller/userController.js";
 
 const router = express.Router();
 
 
-router.post("/create", createUser);
-router.get('/get', getAllUsers);
-router.get('/get/:id', getUserById);
-router.delete('/delete/:id', deleteUserById);
-router.put('/update/:id', updateUser);
+
+router.get('/get', verifySessionTokenAdmin, getAllUsers);
+
+router.get('/get/:id', verifySessionTokenUser, getUserById);
+
+router.delete('/delete/:id', verifySessionTokenUser, deleteUserById);
+
+router.put('/update/:id', verifySessionTokenUser, updateUser);
+
+// router.put('delete/', verifySessionTokenAdmin, deleteAllUsers);
 
 export default router;
